@@ -1,13 +1,13 @@
 # 🛡️ Beginner's Guide: Find Data-Stealing Apps on Android & Remove Them
 
-Is your phone leaking private data in the background? This easy, step-by-step guide will show you how to **track background activity**, **find sneaky apps**, **block them**, and **delete unwanted apps**—even without rooting your phone or having advanced technical skills!
+Is your phone leaking private data in the background? This easy, step-by-step guide will show you how to **track background activity**, **find sneaky apps**, **block them**, and **delete unwanted apps**—**100% using your Android phone (No PC or Root required!)**.
 
 ---
 
 ## 📌 Quick Summary: How This Works
 
-1. **Record:** Use **PCAPdroid** on your phone to record all internet activity into a file.
-2. **Inspect:** Open that file on a PC using **Wireshark** to see which app sent data to suspicious servers.
+1. **Record & Inspect:** Capture and analyze your phone's internet traffic using **Reqable** / **PCAPdroid** directly on Android (or **Wireshark** on PC).
+2. **Identify:** Find which app is sending data to suspicious external servers.
 3. **Block:** Stop the offending app's internet access instantly using **RethinkDNS**.
 4. **Delete:** Permanently remove the bad app using **Shizuku + Canta**.
 
@@ -15,13 +15,14 @@ Is your phone leaking private data in the background? This easy, step-by-step gu
 
 ## 🛠️ Step 0: Download the Free Tools
 
-All tools used in this guide are open-source and free:
+All tools used in this guide are open-source or free to use:
 
-* 📱 **[PCAPdroid](https://play.google.com/store/apps/details?id=com.emanuelef.remote_pdb):** Records your phone's internet traffic.
-* 💻 **[Wireshark](https://www.wireshark.org/):** Free software for your PC/Ubuntu to inspect recorded files.
-* 🛡️ **[RethinkDNS](https://play.google.com/store/apps/details?id=com.celzero.bravedns):** A powerful firewall to block internet access for specific apps.
-* ⚡ **[Shizuku](https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api):** Gives special permissions to delete system apps without root.
-* 🗑️ **[Canta](https://f-droid.org/packages/org.schabi.newpipe/):** The app remover that works with Shizuku. *(Search inside F-Droid to install)*.
+* 📱 **[PCAPdroid](https://play.google.com/store/apps/details?id=com.emanuelef.remote_pdb):** Captures and tracks live network traffic on Android.
+* 🔍 **[Reqable](https://play.google.com/store/apps/details?id=com.reqable.android):** Inspects HTTP/HTTPS traffic directly on Android without needing a PC.
+* 💻 **[Wireshark](https://www.wireshark.org/):** *(Optional)* For detailed PC/Laptop analysis.
+* 🛡️ **[RethinkDNS](https://play.google.com/store/apps/details?id=com.celzero.bravedns):** A local firewall to block internet access for specific apps.
+* ⚡ **[Shizuku](https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api):** Grants special permissions to delete system apps without root.
+* 🗑️ **[Canta](https://f-droid.org/packages/org.schabi.newpipe/):** The app uninstaller that works with Shizuku *(Search inside F-Droid)*.
 
 ---
 
@@ -33,37 +34,45 @@ All tools used in this guide are open-source and free:
 
 1. Open **PCAPdroid**.
 2. Tap the **Settings** ⚙️ icon.
-3. Tap **Traffic dump** and select **`PCAP file`**.
-4. Go back to the main screen and tap the **Play ▶️** button.
-5. If Android asks for **VPN permission**, tap **Allow**.
-6. **Leave your phone running** for 1 to 6 hours (you can lock your screen or use your phone normally).
-7. Tap **Stop ⏹️**. A `.pcap` file is now saved in your phone's `Downloads` or `Documents` folder.
+3. Choose your dump option:
+   * **`No dump`** (If analyzing live inside PCAPdroid or Reqable on Android).
+   * **`PCAP file`** (If saving a log file to analyze later).
+4. Return to the main screen and tap **Start ▶️** (Grant VPN permission).
+5. Leave your phone running for **1 to 6 hours**.
+6. Tap **Stop ⏹️**.
 
 ---
 
-### 🔍 Step 2: Analyze the File on Your Computer (Wireshark)
+### 🔍 Step 2: Analyze Traffic (No PC Needed!)
 
 > **Goal:** Find out which app sent your data and where it went.
 
-1. Send the saved `.pcap` file to your PC or Laptop.
-2. Open the `.pcap` file in **Wireshark**.
-3. **Check secret data uploads:** In the top search bar, type:
-   ```text
-   http.request.method == "POST"
-*(This shows apps sending data out to external servers).*
-4. **Find heavy data users:** Click **Statistics** (at the top menu) ➔ **Endpoints** ➔ **IPv4**. Click on **Tx Bytes** to sort from highest to lowest.
-5. **Check suspicious IPs:** If you see an unknown IP address sending large amounts of data, copy it and paste it into [VirusTotal.com](https://www.virustotal.com) to check if it's dangerous.
+#### Option A: Using Android Only (No PC Needed) 📱
+1. **Live Inspection in PCAPdroid:**
+   * Go to the **Connections** tab inside PCAPdroid.
+   * Look for unknown apps or services sending unexpectedly large amounts of data (KB/MB).
+   * Tap any suspicious connection to inspect its destination domain and IP address.
+2. **Deep Inspection using Reqable:**
+   * Open **Reqable** and tap **Start**.
+   * Filter the connection list by **POST** requests (which indicates outgoing data/uploads).
+   * Copy any unknown IP or domain and paste it into [VirusTotal.com](https://www.virustotal.com) to check for malware/spyware flags.
+
+#### Option B: Using a Computer (Wireshark) 💻
+1. Transfer the saved `.pcap` file to your PC.
+2. Open it in **Wireshark**.
+3. Type `http.request.method == "POST"` in the top filter bar.
+4. Go to **Statistics ➔ Endpoints ➔ IPv4** and sort by **Tx Bytes** to spot heavy data uploads.
 
 ---
 
 ### 🛑 Step 3: Block the Sneaky App Immediately (RethinkDNS)
 
-> **Goal:** Stop bad apps from connecting to the internet without deleting them yet.
+> **Goal:** Cut off internet access for suspicious apps without deleting them yet.
 
 1. Open **RethinkDNS** and tap **Start**.
 2. Go to the **Apps** tab at the bottom.
-3. Find the suspicious app on the list.
-4. Tap both the **Wi-Fi** and **Mobile Data** icons next to it so they turn into **Red Crosses (❌)**.
+3. Locate the suspicious app on the list.
+4. Tap both the **Wi-Fi** and **Mobile Data** icons until they turn into **Red Crosses (❌)**.
 
 *🎉 **Result:** The app is now completely cut off from the internet and cannot leak any data!*
 
@@ -73,7 +82,7 @@ All tools used in this guide are open-source and free:
 
 > **Goal:** Uninstall bloatware or hidden spyware without rooting or connecting to a PC.
 
-1. Go to your phone's **Settings ➔ Developer Options** and turn on **Wireless Debugging**.
+1. Go to **Settings ➔ Developer Options** and enable **Wireless Debugging**.
 2. Open **Shizuku**, tap **Pairing**, and enter the 6-digit code provided by Wireless Debugging.
 3. Tap **Start** inside Shizuku.
 4. Open **Canta** and grant it permission to connect with Shizuku.
@@ -88,7 +97,7 @@ All tools used in this guide are open-source and free:
 
 * 🎣 **Phishing Scams:** If you manually type your password into a fake website, network monitoring cannot save you.
 * 🐛 **System Vulnerabilities (Zero-Days):** Undiscovered bugs in Android or hardware can sometimes bypass user-level firewalls.
-* 🔓 **Compromised Accounts:** If your Google or social media password is weak, hackers can access your data from another device.
+* 🔓 **Compromised Accounts:** Weak passwords or compromised cloud accounts can lead to data loss regardless of device isolation.
 
 ---
 
